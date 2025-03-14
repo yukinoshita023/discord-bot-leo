@@ -1,19 +1,19 @@
 import discord
+from discord.ext import commands
 from config import TOKEN
 from commands import setup_commands
-from voice_chat_reader import VoiceChatReader # テキスト読み上げ機能
+from voice_chat_reader import VoiceChatReader  # テキスト読み上げ機能
 from time_signal import TimeSignal  # 時報機能
-import voice_state_announce # 入退出読み上げ機能
+import voice_state_announce  # 入退出読み上げ機能
 
 intents = discord.Intents.default()
 intents.message_content = True
 intents.voice_states = True
 
-class MyBot(discord.Client):
+class MyBot(commands.Bot):
     def __init__(self):
-        super().__init__(intents=intents)
-        self.tree = discord.app_commands.CommandTree(self)
-        self.voice_chat_reader = VoiceChatReader(self,speed=2.0)
+        super().__init__(command_prefix="!", intents=intents)
+        self.voice_chat_reader = VoiceChatReader(self, speed=1.0)
         self.time_signal = None
 
     async def setup_hook(self):

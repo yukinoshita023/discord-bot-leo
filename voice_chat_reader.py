@@ -2,10 +2,10 @@ import discord
 import asyncio
 import os
 import re
-from gtts import gTTS
+import edge_tts
 
 class VoiceChatReader:
-    def __init__(self, bot, speed=1.5):
+    def __init__(self, bot, speed=1.0):
         self.bot = bot
         self.speed = speed
         self.voice_tmp_dir = os.path.join(os.path.dirname(__file__), "voice_tmp")
@@ -41,12 +41,15 @@ class VoiceChatReader:
         return text.strip()
 
     async def read_text_in_vc(self, vc, text):
-        tts = gTTS(text=text, lang="ja")
         filename = os.path.join(self.voice_tmp_dir, "speech.mp3")
-        tts.save(filename)
+        
+        voice = "ja-JP-KeitaNeural" 
+
+        tts = edge_tts.Communicate(text, voice)
+        await tts.save(filename)
 
         ffmpeg_options = f'-filter:a "atempo={self.speed}"'
-
         vc.play(discord.FFmpegPCMAudio(filename, options=ffmpeg_options), after=lambda e: os.remove(filename))
+
         while vc.is_playing():
             await asyncio.sleep(1)

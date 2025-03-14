@@ -1,0 +1,9 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+TOKEN = os.getenv("DISCORD_BOT_TOKEN")
+
+VOICE_CHANNEL_ID = 860122545381572608
+
+ADMIN_ROLE_ID = 946432769242845224

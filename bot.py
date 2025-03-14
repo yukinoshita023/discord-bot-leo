@@ -13,7 +13,7 @@ class MyBot(discord.Client):
     def __init__(self):
         super().__init__(intents=intents)
         self.tree = discord.app_commands.CommandTree(self)
-        self.voice_chat_reader = VoiceChatReader(self,speed=2.0)
+        self.voice_chat_reader = VoiceChatReader(self,speed=1.5)
         self.time_signal = None
 
     async def setup_hook(self):

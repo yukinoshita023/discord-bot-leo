@@ -1,42 +1,38 @@
 import discord
 import os
-import edge_tts
+import asyncio
 import subprocess
 
 VOICE_TMP_DIR = "voice_tmp"
+EDGE_TTS_PATH = "edge-tts"  # edge-tts が PATH に通ってる前提
 
 if not os.path.exists(VOICE_TMP_DIR):
     os.makedirs(VOICE_TMP_DIR)
 
-async def play_tts(vc, text, voice="ja-JP-KeitaNeural"):
+async def play_tts(bot, vc, text, speed=1.0):
+    # speed=1.0 → rate="+0%", 2.0 → rate="+100%", 0.8 → rate="-20%"
+    rate_percent = int((speed - 1.0) * 100)
+    rate_option = f"{rate_percent:+d}%"  # +20%, -10% みたいにする
+
     filename = os.path.join(VOICE_TMP_DIR, "vc_announce.mp3")
-    
-    tts = edge_tts.Communicate(text, voice)  
-    await tts.save(filename)
 
-    temp_filename = os.path.join(VOICE_TMP_DIR, "vc_announce_temp.mp3")
-    
-    subprocess.run([
-        'ffmpeg', '-i', filename, temp_filename, '-loglevel', 'quiet',
-    ])
+    # edge-tts 実行（音声生成）
+    command = [
+        EDGE_TTS_PATH,
+        "--text", text,
+        "--write-media", filename,
+        "--voice", "ja-JP-KeitaNeural",
+        "--rate", rate_option,
+    ]
 
-    vc.play(discord.FFmpegPCMAudio(temp_filename), after=lambda e: os.remove(temp_filename))
+    subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    os.remove(filename)
+    source = discord.FFmpegPCMAudio(filename)
 
-def setup(bot):
-    @bot.event
-    async def on_voice_state_update(member, before, after):
-        if before.channel != after.channel:
-            display_name = member.display_name  
+    async def cleanup():
+        await asyncio.sleep(1)
+        if os.path.exists(filename):
+            os.remove(filename)
 
-            vc = None
-            if after.channel and bot.user in after.channel.members:
-                vc = discord.utils.get(bot.voice_clients, guild=member.guild)
-                if vc and vc.is_connected():
-                    await play_tts(vc, f"{display_name} さんが参加しました")
-
-            elif before.channel and bot.user in before.channel.members:
-                vc = discord.utils.get(bot.voice_clients, guild=member.guild)
-                if vc and vc.is_connected():
-                    await play_tts(vc, f"{display_name} さんが退出しました")
+    await bot.audio_queue.enqueue(vc, source)
+    asyncio.create_task(cleanup())

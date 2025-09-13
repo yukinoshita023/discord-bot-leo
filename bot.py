@@ -21,7 +21,6 @@ class MyBot(commands.Bot):
         await self.load_extension("features.voice_state_announce")
         await self.load_extension("features.voice_chat_reader")
         await self.load_extension("features.time_signal")
-        await self.load_extension("features.meibo_reaction")
         await self.load_extension("features.vc_watchdog")
 
         await self.tree.sync()

@@ -1,7 +1,7 @@
-# ノワール
+# レオ
 ## Discordサーバー「わくせい」の常駐型BOT
 
-![ノワール画像](ノワール.png)
+![レオ画像](レオ.png)
 *illust by yukinoshita*
 
 

@@ -19,10 +19,10 @@ class VoiceStateAnnounce(commands.Cog):
             return
 
         if joined and self.bot.user in after.channel.members:
-            await play_tts(self.bot, vc, f"{member.display_name} さんが参加しました", speed=2.0)
+            await play_tts(self.bot, vc, f"{member.display_name} さんが参加しました", speed=1.5)
 
         if left and self.bot.user in before.channel.members:
-            await play_tts(self.bot, vc, f"{member.display_name} さんが退出しました", speed=2.0)
+            await play_tts(self.bot, vc, f"{member.display_name} さんが退出しました", speed=1.5)
 
 async def setup(bot):
     await bot.add_cog(VoiceStateAnnounce(bot))

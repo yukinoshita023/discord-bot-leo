@@ -7,6 +7,7 @@ from services.audio_queue import AudioQueue
 from config import VOICE_MODEL
 
 DEFAULT_VOLUME = 0.3
+PLAY_WAV_VOLUME = 0.7
 
 def speed_to_rate(speed: float) -> str:
     pct = int((speed - 1.0) * 100)
@@ -54,7 +55,7 @@ async def play_tts(
 
     await bot.audio_queue.enqueue(job())
 
-async def play_wav(bot, vc: discord.VoiceClient, path: str, volume: float = DEFAULT_VOLUME):
+async def play_wav(bot, vc: discord.VoiceClient, path: str, volume: float = PLAY_WAV_VOLUME):
     async def job():
         def after_play(err):
             if err:
